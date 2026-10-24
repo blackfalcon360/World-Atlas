@@ -1,0 +1,104 @@
+# key|urdu|arabic  (key = subdivision code, or city:Name:ISO2)
+PK-BA|بلوچستان|بلوشستان
+PK-GB|گلگت بلتستان|جلجت بالتستان
+PK-IS|اسلام آباد|إسلام آباد
+PK-JK|آزاد جموں و کشمیر|آزاد جامو وكشمير
+PK-KP|خیبر پختونخوا|خيبر بختونخوا
+PK-PB|پنجاب|البنجاب
+PK-SD|سندھ|السند
+city:Karachi:PK|کراچی|كراتشي
+city:Lahore:PK|لاہور|لاهور
+city:Faisalabad:PK|فیصل آباد|فيصل آباد
+city:Rawalpindi:PK|راولپنڈی|روالبندي
+city:Gujranwala:PK|گوجرانوالہ|غوجرانوالا
+city:Peshawar:PK|پشاور|بيشاور
+city:Multan:PK|ملتان|ملتان
+city:Hyderabad:PK|حیدرآباد|حيدر أباد
+city:Islamabad:PK|اسلام آباد|إسلام آباد
+city:Quetta:PK|کوئٹہ|كويتا
+city:Bahawalpur:PK|بہاولپور|بهاولبور
+city:Sargodha:PK|سرگودھا|سارغودا
+city:Sialkot:PK|سیالکوٹ|سيالكوت
+city:Sukkur:PK|سکھر|سكر
+city:Larkana:PK|لاڑکانہ|لاركانا
+city:Sheikhupura:PK|شیخوپورہ|شيخوبورا
+city:Mardan:PK|مردان|مردان
+city:Gujrat:PK|گجرات|غوجرات
+city:Abbottabad:PK|ایبٹ آباد|أبوت آباد
+city:Mingora:PK|مینگورہ|مينغورا
+city:Jhelum:PK|جہلم|جهلم
+city:Dera Ghazi Khan:PK|ڈیرہ غازی خان|ديرة غازي خان
+city:Rahim Yar Khan:PK|رحیم یار خان|رحيم يار خان
+city:Gwadar:PK|گوادر|غوادر
+city:Muzaffarabad:PK|مظفرآباد|مظفر آباد
+city:Gilgit:PK|گلگت|جلجت
+city:Skardu:PK|سکردو|سكردو
+city:Hazro:PK|حضرو|حضرو
+city:Attock:PK|اٹک|أتوك
+city:Wah Cantonment:PK|واہ کینٹ|واه كانت
+city:Taxila:PK|ٹیکسلا|تاكسيلا
+city:Kohat:PK|کوہاٹ|كوهات
+city:Bannu:PK|بنوں|بانو
+city:Chitral:PK|چترال|تشيترال
+city:Khuzdar:PK|خضدار|خوزدار
+city:Turbat:PK|تربت|توربات
+city:Delhi:IN|دہلی|دلهي
+city:Mumbai:IN|ممبئی|مومباي
+city:Kolkata:IN|کولکاتا|كلكتا
+city:Srinagar:IN|سرینگر|سريناغار
+city:Dhaka:BD|ڈھاکہ|دكا
+city:Kabul:AF|کابل|كابول
+city:Kandahar:AF|قندھار|قندهار
+city:Herat:AF|ہرات|هرات
+city:Jalalabad:AF|جلال آباد|جلال آباد
+city:Mazar-i-Sharif:AF|مزار شریف|مزار شريف
+city:Tehran:IR|تہران|طهران
+city:Mashhad:IR|مشہد|مشهد
+city:Baghdad:IQ|بغداد|بغداد
+city:Riyadh:SA|ریاض|الرياض
+city:Jeddah:SA|جدہ|جدة
+city:Mecca:SA|مکہ مکرمہ|مكة المكرمة
+city:Medina:SA|مدینہ منورہ|المدينة المنورة
+city:Dubai:AE|دبئی|دبي
+city:Abu Dhabi:AE|ابوظہبی|أبو ظبي
+city:Doha:QA|دوحہ|الدوحة
+city:Kuwait City:KW|کویت سٹی|مدينة الكويت
+city:Muscat:OM|مسقط|مسقط
+city:Manama:BH|منامہ|المنامة
+city:Sana'a:YE|صنعا|صنعاء
+city:Amman:JO|عمان|عمّان
+city:Damascus:SY|دمشق|دمشق
+city:Beirut:LB|بیروت|بيروت
+city:Jerusalem:IL|یروشلم|القدس
+city:Gaza:PS|غزہ|غزة
+city:Istanbul:TR|استنبول|إسطنبول
+city:Ankara:TR|انقرہ|أنقرة
+city:Cairo:EG|قاہرہ|القاهرة
+city:Alexandria:EG|اسکندریہ|الإسكندرية
+city:Tripoli:LY|طرابلس|طرابلس
+city:Tunis:TN|تیونس|تونس
+city:Algiers:DZ|الجزائر|الجزائر
+city:Casablanca:MA|کاسابلانکا|الدار البيضاء
+city:Rabat:MA|رباط|الرباط
+city:Khartoum:SD|خرطوم|الخرطوم
+city:Colombo:LK|کولمبو|كولومبو
+city:Kathmandu:NP|کھٹمنڈو|كاتماندو
+city:Kuala Lumpur:MY|کوالالمپور|كوالا لمبور
+city:Jakarta:ID|جکارتہ|جاكرتا
+city:Bangkok:TH|بینکاک|بانكوك
+city:Singapore:SG|سنگاپور|سنغافورة
+city:Beijing:CN|بیجنگ|بكين
+city:Shanghai:CN|شنگھائی|شانغهاي
+city:Tokyo:JP|ٹوکیو|طوكيو
+city:Seoul:KR|سیول|سول
+city:Moscow:RU|ماسکو|موسكو
+city:London:GB|لندن|لندن
+city:Paris:FR|پیرس|باريس
+city:Berlin:DE|برلن|برلين
+city:Rome:IT|روم|روما
+city:Madrid:ES|میڈرڈ|مدريد
+city:New York:US|نیو یارک|نيويورك
+city:Washington, D.C.:US|واشنگٹن ڈی سی|واشنطن العاصمة
+city:Los Angeles:US|لاس اینجلس|لوس أنجلوس
+city:Toronto:CA|ٹورنٹو|تورونتو
+city:Sydney:AU|سڈنی|سيدني

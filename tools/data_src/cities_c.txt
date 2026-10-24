@@ -1,0 +1,170 @@
+New York|US|40.71|-74.01|18800
+Los Angeles|US|34.05|-118.24|12500
+Chicago|US|41.88|-87.63|8900
+Houston|US|29.76|-95.37|6400
+Phoenix|US|33.45|-112.07|4300
+Philadelphia|US|39.95|-75.17|5700
+San Antonio|US|29.42|-98.49|2500
+San Diego|US|32.72|-117.16|3300
+Dallas|US|32.78|-96.80|6500
+San Jose|US|37.34|-121.89|2000
+Austin|US|30.27|-97.74|2300
+Jacksonville|US|30.33|-81.66|1600
+San Francisco|US|37.77|-122.42|3500
+Seattle|US|47.61|-122.33|4000
+Denver|US|39.74|-104.99|2900
+Boston|US|42.36|-71.06|4400
+Miami|US|25.76|-80.19|6200
+Atlanta|US|33.75|-84.39|5200
+Detroit|US|42.33|-83.05|3800
+Las Vegas|US|36.17|-115.14|2300
+Portland|US|45.52|-122.68|2500
+Minneapolis|US|44.98|-93.27|3000
+New Orleans|US|29.95|-90.07|1000
+Salt Lake City|US|40.76|-111.89|1200
+Honolulu|US|21.31|-157.86|1000
+Anchorage|US|61.22|-149.90|300
+Washington, D.C.|US|38.90|-77.04|5400
+Nashville|US|36.16|-86.78|1500
+St. Louis|US|38.63|-90.20|2700
+Kansas City|US|39.10|-94.58|2200
+Cleveland|US|41.50|-81.69|2000
+Pittsburgh|US|40.44|-80.00|2300
+Charlotte|US|35.23|-80.84|2500
+Orlando|US|28.54|-81.38|2500
+Baltimore|US|39.29|-76.61|2800
+Albuquerque|US|35.08|-106.65|900
+Oklahoma City|US|35.47|-97.52|1400
+Memphis|US|35.15|-90.05|1300
+Milwaukee|US|43.04|-87.91|1400
+Sacramento|US|38.58|-121.49|2400
+Tampa|US|27.95|-82.46|3200
+Indianapolis|US|39.77|-86.16|2100
+Columbus|US|39.96|-83.00|2100
+Cincinnati|US|39.10|-84.51|2300
+El Paso|US|31.76|-106.49|900
+Boise|US|43.62|-116.20|800
+Juneau|US|58.30|-134.42|30
+Toronto|CA|43.65|-79.38|6300
+Montreal|CA|45.50|-73.57|4300
+Vancouver|CA|49.28|-123.12|2700
+Calgary|CA|51.05|-114.07|1500
+Edmonton|CA|53.55|-113.49|1500
+Ottawa|CA|45.42|-75.70|1400
+Winnipeg|CA|49.90|-97.14|830
+Quebec City|CA|46.81|-71.21|830
+Halifax|CA|44.65|-63.57|440
+Saskatoon|CA|52.13|-106.67|330
+Victoria|CA|48.43|-123.37|400
+St. John's|CA|47.56|-52.71|210
+Whitehorse|CA|60.72|-135.06|28
+Yellowknife|CA|62.45|-114.37|20
+Iqaluit|CA|63.75|-68.52|8
+Mexico City|MX|19.43|-99.13|21800
+Guadalajara|MX|20.67|-103.35|5300
+Monterrey|MX|25.69|-100.32|5000
+Puebla|MX|19.04|-98.21|3300
+Tijuana|MX|32.51|-117.04|2200
+León|MX|21.12|-101.68|1900
+Mérida|MX|20.97|-89.62|1300
+Cancún|MX|21.16|-86.85|900
+Chihuahua|MX|28.63|-106.07|950
+Oaxaca|MX|17.07|-96.73|300
+Guatemala City|GT|14.63|-90.51|3000
+San Salvador|SV|13.69|-89.22|1100
+Tegucigalpa|HN|14.07|-87.19|1300
+San Pedro Sula|HN|15.50|-88.03|800
+Managua|NI|12.11|-86.27|1100
+San José|CR|9.93|-84.08|1400
+Panama City|PA|8.98|-79.52|1900
+Belize City|BZ|17.50|-88.20|60
+Havana|CU|23.11|-82.37|2100
+Santiago de Cuba|CU|20.02|-75.83|510
+Kingston|JM|17.97|-76.79|600
+Port-au-Prince|HT|18.54|-72.34|2900
+Santo Domingo|DO|18.49|-69.93|3500
+Santiago de los Caballeros|DO|19.45|-70.69|600
+San Juan|PR|18.47|-66.11|2300
+Nassau|BS|25.05|-77.35|280
+Port of Spain|TT|10.65|-61.52|370
+Bridgetown|BB|13.10|-59.61|110
+Bogotá|CO|4.71|-74.07|11300
+Medellín|CO|6.25|-75.57|4100
+Cali|CO|3.45|-76.53|2800
+Barranquilla|CO|10.96|-74.78|2300
+Cartagena|CO|10.39|-75.48|1100
+Caracas|VE|10.49|-66.88|2900
+Maracaibo|VE|10.64|-71.64|2300
+Valencia|VE|10.16|-68.00|1700
+Quito|EC|-0.18|-78.47|2000
+Guayaquil|EC|-2.17|-79.92|3100
+Lima|PE|-12.05|-77.04|11000
+Arequipa|PE|-16.41|-71.54|1100
+Cusco|PE|-13.53|-71.97|450
+Trujillo|PE|-8.11|-79.03|920
+Iquitos|PE|-3.75|-73.25|470
+La Paz|BO|-16.49|-68.12|1900
+Santa Cruz de la Sierra|BO|-17.78|-63.18|2100
+Cochabamba|BO|-17.39|-66.16|1300
+Sucre|BO|-19.03|-65.26|300
+Santiago|CL|-33.45|-70.67|6900
+Valparaíso|CL|-33.05|-71.62|1000
+Concepción|CL|-36.83|-73.05|1000
+Punta Arenas|CL|-53.16|-70.91|130
+Antofagasta|CL|-23.65|-70.40|430
+Buenos Aires|AR|-34.60|-58.38|15400
+Córdoba|AR|-31.42|-64.18|1600
+Rosario|AR|-32.95|-60.64|1400
+Mendoza|AR|-32.89|-68.83|1100
+Tucumán|AR|-26.82|-65.22|1000
+Salta|AR|-24.78|-65.41|620
+Bariloche|AR|-41.13|-71.31|135
+Ushuaia|AR|-54.80|-68.30|82
+Montevideo|UY|-34.90|-56.19|1800
+Asunción|PY|-25.26|-57.58|3400
+Ciudad del Este|PY|-25.51|-54.61|350
+São Paulo|BR|-23.55|-46.63|22600
+Rio de Janeiro|BR|-22.91|-43.17|13700
+Brasília|BR|-15.79|-47.88|4800
+Salvador|BR|-12.97|-38.50|4000
+Fortaleza|BR|-3.73|-38.52|4100
+Belo Horizonte|BR|-19.92|-43.94|6200
+Manaus|BR|-3.12|-60.02|2300
+Curitiba|BR|-25.43|-49.27|3700
+Recife|BR|-8.05|-34.88|4100
+Porto Alegre|BR|-30.03|-51.23|4400
+Belém|BR|-1.46|-48.50|2500
+Goiânia|BR|-16.68|-49.25|2800
+Natal|BR|-5.79|-35.21|1600
+Campo Grande|BR|-20.47|-54.62|950
+Cuiabá|BR|-15.60|-56.10|900
+Florianópolis|BR|-27.60|-48.55|1200
+Porto Velho|BR|-8.76|-63.90|550
+Rio Branco|BR|-9.97|-67.81|400
+Georgetown|GY|6.80|-58.16|110
+Paramaribo|SR|5.85|-55.20|240
+Cayenne|GF|4.94|-52.33|65
+Sydney|AU|-33.87|151.21|5300
+Melbourne|AU|-37.81|144.96|5200
+Brisbane|AU|-27.47|153.03|2600
+Perth|AU|-31.95|115.86|2200
+Adelaide|AU|-34.93|138.60|1400
+Gold Coast|AU|-28.02|153.40|700
+Canberra|AU|-35.28|149.13|460
+Hobart|AU|-42.88|147.33|250
+Darwin|AU|-12.46|130.84|150
+Cairns|AU|-16.92|145.77|160
+Alice Springs|AU|-23.70|133.88|26
+Auckland|NZ|-36.85|174.76|1700
+Wellington|NZ|-41.29|174.78|420
+Christchurch|NZ|-43.53|172.64|400
+Queenstown|NZ|-45.03|168.66|30
+Port Moresby|PG|-9.44|147.18|400
+Honiara|SB|-9.43|159.95|90
+Suva|FJ|-18.14|178.44|190
+Port Vila|VU|-17.73|168.32|50
+Nouméa|NC|-22.28|166.46|100
+Papeete|PF|-17.54|-149.57|140
+Apia|WS|-13.83|-171.76|37
+Nuku'alofa|TO|-21.14|-175.20|25
+Hagåtña|GU|13.48|144.75|1

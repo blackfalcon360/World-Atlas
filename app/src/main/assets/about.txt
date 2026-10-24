@@ -1,0 +1,3 @@
+countries=250
+subdivisions=5046
+cities=886
