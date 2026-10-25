@@ -40,7 +40,7 @@ final class Rows {
     static TextView header(Ui ui, String text) {
         TextView t = ui.tv(text, 16, ui.tx);
         t.setPadding(ui.dp(4), ui.dp(10), ui.dp(4), ui.dp(6));
-        t.setFakeBoldText(true);
+        t.setTypeface(null, android.graphics.Typeface.BOLD);
         return t;
     }
 }
