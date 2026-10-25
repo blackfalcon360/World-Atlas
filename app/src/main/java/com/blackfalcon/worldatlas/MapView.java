@@ -422,10 +422,11 @@ final class MapView extends View {
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
 
-        // Set to track unique city/capital coordinates to prevent double rendering
+        // Sets to track unique capitals and cities
+        HashSet<String> drawnCapitals = new HashSet<String>();
         HashSet<String> drawnCityKeys = new HashSet<String>();
 
-        // 1. Countries - Clearly larger font size than cities/capitals, centered at country coordinate
+        // 1. Countries - Larger font size, centered at country coordinate
         if (sd >= 0.4f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -436,7 +437,7 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                // Much larger font size for countries to ensure they are bigger than cities/capitals
+                // Clearly larger font size for countries compared to cities/capitals
                 float nameSize = c.sov ? 13.5f : 11f;
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
@@ -452,11 +453,20 @@ final class MapView extends View {
             }
         }
 
-        // 2. Cities & Capitals - Smaller font size, deduplicated
+        // 2. Cities & Capitals (Strict deduplication for capitals by name so they NEVER appear twice)
         for (Data.City c : citiesByPop) {
             String cityName = Data.name(c, lang);
-            String cityKey = cityName + "_" + Math.round(c.lat * 100.0) / 100.0 + "_" + Math.round(c.lon * 100.0) / 100.0;
-            if (drawnCityKeys.contains(cityKey)) continue;
+
+            if (c.cap) {
+                // Capitals are strictly checked by name to prevent any duplicate rendering
+                if (drawnCapitals.contains(cityName)) continue;
+                drawnCapitals.add(cityName);
+            } else {
+                // Regular cities checked by name and coordinates
+                String cityKey = cityName + "_" + Math.round(c.lat * 10.0) / 10.0 + "_" + Math.round(c.lon * 10.0) / 10.0;
+                if (drawnCityKeys.contains(cityKey)) continue;
+                drawnCityKeys.add(cityKey);
+            }
 
             float need;
             if (c.cap) need = 2f;
@@ -471,7 +481,6 @@ final class MapView extends View {
             float x = sx(c.lon), y = sy(c.lat);
             if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
 
-            drawnCityKeys.add(cityKey);
             dot.setColor(th[5]);
 
             if (c.cap) {
@@ -486,7 +495,7 @@ final class MapView extends View {
                 px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
             }
             if (labels < 220 && sd >= need + 0.2f) {
-                // Noticeably smaller font size for cities and capitals compared to countries
+                // Smaller font size for cities and capitals compared to country names
                 label(cv, cityName, x, y + 10 * density, c.cap ? 7.5f : 6.5f, th[5], halo0, c.cap);
                 labels++;
             }
