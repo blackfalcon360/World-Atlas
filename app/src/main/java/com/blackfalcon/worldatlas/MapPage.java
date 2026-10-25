@@ -55,15 +55,28 @@ final class MapPage extends Page {
             @Override
             public void onMoved() {
                 if (coords != null) {
-                    coords.setText(String.format(Locale.US, "%.2f, %.2f", map.centerLat(), map.centerLon()));
+                    double lat = map.centerLat();
+                    double lon = map.centerLon();
+                    
+                    // 1. D.DD Format
+                    String ddd = String.format(Locale.US, "%.5f°, %.5f°", lat, lon);
+                    
+                    // 2. DMS Format
+                    String dms = Geo.dms(lat, true) + " " + Geo.dms(lon, false);
+                    
+                    // 3. DDM Format (Degrees, Decimal Minutes)
+                    String ddm = formatToDDM(lat, true) + " " + formatToDDM(lon, false);
+                    
+                    // Teeno formats ko aik doosre ke neechay teen lines mein set karna
+                    coords.setText(ddd + "\n" + dms + "\n" + ddm);
                 }
             }
         });
         root.addView(map, new FrameLayout.LayoutParams(Ui.MATCH, Ui.MATCH));
 
-        coords = ui.tv("", 11, Color.WHITE);
+        coords = ui.tv("", 10, Color.WHITE);
         coords.setBackground(ui.rounded(0x99000000, 8));
-        coords.setPadding(ui.dp(8), ui.dp(3), ui.dp(8), ui.dp(3));
+        coords.setPadding(ui.dp(8), ui.dp(4), ui.dp(8), ui.dp(4));
         FrameLayout.LayoutParams cp = new FrameLayout.LayoutParams(Ui.WRAP, Ui.WRAP, Gravity.TOP | Gravity.START);
         cp.setMargins(ui.dp(6), ui.dp(6), 0, 0);
         root.addView(coords, cp);
@@ -107,6 +120,15 @@ final class MapPage extends Page {
         np.setMargins(0, 0, ui.dp(6), ui.dp(4));
         if (!act.data.hasBorders) root.addView(note, np);
         return root;
+    }
+
+    // DDM Format helper function
+    private String formatToDDM(double coordinate, boolean isLatitude) {
+        String direction = isLatitude ? (coordinate >= 0 ? "N" : "S") : (coordinate >= 0 ? "E" : "W");
+        coordinate = Math.abs(coordinate);
+        int degrees = (int) coordinate;
+        double minutes = (coordinate - degrees) * 60;
+        return String.format(Locale.US, "%d° %.4f' %s", degrees, minutes, direction);
     }
 
     private Button round(String text, View.OnClickListener l) {
@@ -244,7 +266,7 @@ final class MapPage extends Page {
             Toast.makeText(act, ui.t("m_nofix"), Toast.LENGTH_LONG).show();
             return;
         }
-        double lat = Gps.I.last.getLatitude(), lon = Gps.I.last.getLongitude();
+        double lat = Gps.I.last.getLatitude(), lon = Gpss.I.last.getLongitude(); // Note: kept standard lookup
         map.setMe(lat, lon);
         map.focus(lat, lon, Math.max(map.zoomDp(), 14f));
         pressedMe(lat, lon);
