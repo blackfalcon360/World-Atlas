@@ -421,7 +421,7 @@ final class MapView extends View {
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
 
-        // countries - show all names without limits or collision checks
+        // 1. Countries - Show all names positioned slightly above the dot (y - 11 * density)
         if (sd >= 0.4f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -432,23 +432,23 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                // Draw name directly without restriction
                 float nameSize = c.sov ? 11f : 9.5f;
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
                 halo.setTextSize(nameSize * density);
                 halo.setFakeBoldText(c.sov);
                 halo.setColor(halo0);
-                text.setColor(th[3]);
+                text.setColor(th[3]); // Country name color
                 
                 String countryName = Data.name(c, lang);
-                float hText = nameSize * density;
-                cv.drawText(countryName, x, y + hText * 0.35f, halo);
-                cv.drawText(countryName, x, y + hText * 0.35f, text);
+                // Position text slightly above the dot so it's not glued/overlapping the dot
+                float textY = y - 11 * density;
+                cv.drawText(countryName, x, textY, halo);
+                cv.drawText(countryName, x, textY, text);
             }
         }
 
-        // cities
+        // 2. Cities & Capitals
         for (Data.City c : citiesByPop) {
             float need;
             if (c.cap) need = 8f;
@@ -471,10 +471,11 @@ final class MapView extends View {
                 px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
             }
             if (labels < 220 && sd >= need + 0.2f) {
-                label(cv, Data.name(c, lang), x, y + 10 * density, c.cap ? 11f : 10f, th[3], halo0, c.cap);
+                label(cv, Data.name(c, lang), x, y + 10 * density, c.cap ? 11f : 10f, th[5], halo0, c.cap);
                 labels++;
             }
         }
+
         // subdivisions
         if (sd >= 14f) {
             for (Data.Sub b : data.subs) {
