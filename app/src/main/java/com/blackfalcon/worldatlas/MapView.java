@@ -421,7 +421,7 @@ final class MapView extends View {
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
 
-        // 1. Countries - Show all names positioned slightly above the dot (y - 11 * density)
+        // 1. Countries - Show all names larger and scaling/stretching dynamically with zoom (sd)
         if (sd >= 0.4f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -432,7 +432,10 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                float nameSize = c.sov ? 11f : 9.5f;
+                // Dynamic scale factor so text gets larger and stretches with zoom level (sd)
+                float scaleFactor = Math.max(1f, Math.min(3.5f, sd * 0.28f));
+                float nameSize = (c.sov ? 15f : 12f) * scaleFactor;
+                
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
                 halo.setTextSize(nameSize * density);
@@ -441,8 +444,8 @@ final class MapView extends View {
                 text.setColor(th[3]); // Country name color
                 
                 String countryName = Data.name(c, lang);
-                // Position text slightly above the dot so it's not glued/overlapping the dot
-                float textY = y - 11 * density;
+                // Position text nicely centered above the dot with proper spacing
+                float textY = y - (14f * scaleFactor);
                 cv.drawText(countryName, x, textY, halo);
                 cv.drawText(countryName, x, textY, text);
             }
