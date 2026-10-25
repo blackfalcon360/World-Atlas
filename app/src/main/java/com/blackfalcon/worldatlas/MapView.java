@@ -76,7 +76,7 @@ final class MapView extends View {
         super(c);
         data = d;
         density = c.getResources().getDisplayMetrics().density;
-        setLayerType(LAYER_TYPE_SOFTWARE, null); // very large zoomed paths are drawn reliably in software
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
         setFocusable(true);
         stroke.setStyle(Paint.Style.STROKE);
         stroke.setStrokeJoin(Paint.Join.ROUND);
@@ -99,7 +99,6 @@ final class MapView extends View {
             paths[i] = p;
         }
 
-        // Initialize State Paths
         statePaths = new Path[d.statePolys.size()];
         for (int i = 0; i < statePaths.length; i++) {
             float[] xy = d.statePolys.get(i).xy;
@@ -112,7 +111,6 @@ final class MapView extends View {
             statePaths[i] = p;
         }
 
-        // Initialize River Paths
         riverPaths = new Path[d.rivers.size()];
         for (int i = 0; i < riverPaths.length; i++) {
             float[] xy = d.rivers.get(i).xy;
@@ -179,8 +177,6 @@ final class MapView extends View {
         });
     }
 
-    // ---------- public API ----------
-
     void setListener(Listener l) { listener = l; }
 
     void setTheme(int t) {
@@ -221,7 +217,6 @@ final class MapView extends View {
 
     double centerLon() { return cLon; }
 
-    /** Zoom measured in dp per degree. */
     float zoomDp() { return density == 0 ? 0 : scale / density; }
 
     void focus(double lat, double lon, float dpPerDeg) {
@@ -241,8 +236,6 @@ final class MapView extends View {
     void zoomBy(float f) {
         zoomAround(f, getWidth() / 2f, getHeight() / 2f);
     }
-
-    // ---------- internals ----------
 
     private float minScale() { return Math.max(1f, getWidth() / 400f); }
 
@@ -275,7 +268,7 @@ final class MapView extends View {
     protected void onSizeChanged(int w, int h, int ow, int oh) {
         super.onSizeChanged(w, h, ow, oh);
         if (scale <= 0 && w > 0) {
-            scale = clampScale(w / 90f); // about 90 degrees across at start
+            scale = clampScale(w / 90f);
         } else if (w > 0) {
             scale = clampScale(scale);
         }
@@ -366,7 +359,6 @@ final class MapView extends View {
         float sd = s / density;
         cv.drawColor(th[0]);
 
-        // land and water shapes, repeated around the world
         double left = cLon - w / (2.0 * s), right = cLon + w / (2.0 * s);
         stroke.setColor(th[2]);
         stroke.setStrokeWidth(Math.max(1f, density * 0.8f) / s);
@@ -392,19 +384,19 @@ final class MapView extends View {
                 cv.drawPath(paths[i], stroke);
             }
 
-            // Draw States / Provinces borders when zoomed in enough
-            if (data.hasStates && sd >= 8f) {
-                stroke.setColor(th[2] & 0x7FFFFFFF); // slightly lighter/transparent border for states
-                stroke.setStrokeWidth(Math.max(0.6f, density * 0.5f) / s);
+            // Draw States / Provinces borders (sd >= 2f par ab ye show hongi)
+            if (data.hasStates && sd >= 2f) {
+                stroke.setColor(th[3]); // wazeh color taake saaf dikhein
+                stroke.setStrokeWidth(Math.max(0.8f, density * 0.6f) / s);
                 for (int i = 0; i < statePaths.length; i++) {
                     cv.drawPath(statePaths[i], stroke);
                 }
             }
 
-            // Draw Rivers when zoomed in
-            if (data.hasRivers && sd >= 6f) {
-                stroke.setColor(th[8]); // river/water feature color
-                stroke.setStrokeWidth(Math.max(0.8f, density * 0.6f) / s);
+            // Draw Rivers (sd >= 1.5f par show hongi)
+            if (data.hasRivers && sd >= 1.5f) {
+                stroke.setColor(th[0]); 
+                stroke.setStrokeWidth(Math.max(1.2f, density * 1.0f) / s);
                 for (int i = 0; i < riverPaths.length; i++) {
                     cv.drawPath(riverPaths[i], stroke);
                 }
@@ -415,13 +407,12 @@ final class MapView extends View {
 
         drawGrid(cv, th, w, h, s);
 
-        // markers
         nPick = 0;
         placed.clear();
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
         boolean bigZoom = sd >= 8f;
-        // countries (until capitals take over)
+        
         if (sd >= 0.9f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -438,7 +429,7 @@ final class MapView extends View {
                 }
             }
         }
-        // cities
+
         for (Data.City c : citiesByPop) {
             float need;
             if (c.cap) need = 8f;
@@ -465,7 +456,7 @@ final class MapView extends View {
                 labels++;
             }
         }
-        // subdivisions
+
         if (sd >= 14f) {
             for (Data.Sub b : data.subs) {
                 if (!b.hasPos()) continue;
@@ -482,7 +473,7 @@ final class MapView extends View {
                 }
             }
         }
-        // my position
+
         if (hasMe) {
             float x = sx(meLon), y = sy(meLat);
             dot.setColor(0x553D8BFF);
@@ -493,7 +484,7 @@ final class MapView extends View {
             stroke.setColor(0xFFFFFFFF);
             cv.drawCircle(x, y, 6 * density, stroke);
         }
-        // selected pin
+
         if (hasSel) {
             float x = sx(selLon), y = sy(selLat);
             dot.setColor(0xFFE53935);
