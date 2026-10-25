@@ -124,6 +124,33 @@ public class MainActivity extends Activity {
         return new double[]{Gps.I.last.getLatitude(), Gps.I.last.getLongitude()};
     }
 
+    // ---------- GPS Coordinate Formats ----------
+
+    // 1. D.DD Format (Decimal Degrees)
+    public String formatToDDD(double lat, double lon) {
+        return String.format(java.util.Locale.US, "%.5f°, %.5f°", lat, lon);
+    }
+
+    // 2. DMS Format (Degrees, Minutes, Seconds)
+    public String formatToDMS(double coordinate, boolean isLatitude) {
+        String direction = isLatitude ? (coordinate >= 0 ? "N" : "S") : (coordinate >= 0 ? "E" : "W");
+        coordinate = Math.abs(coordinate);
+        int degrees = (int) coordinate;
+        double minutesNotTruncated = (coordinate - degrees) * 60;
+        int minutes = (int) minutesNotTruncated;
+        double seconds = (minutesNotTruncated - minutes) * 60;
+        return String.format(java.util.Locale.US, "%d° %d' %.2f\" %s", degrees, minutes, seconds, direction);
+    }
+
+    // 3. DDM Format (Degrees, Decimal Minutes)
+    public String formatToDDM(double coordinate, boolean isLatitude) {
+        String direction = isLatitude ? (coordinate >= 0 ? "N" : "S") : (coordinate >= 0 ? "E" : "W");
+        coordinate = Math.abs(coordinate);
+        int degrees = (int) coordinate;
+        double minutes = (coordinate - degrees) * 60;
+        return String.format(java.util.Locale.US, "%d° %.4f' %s", degrees, minutes, direction);
+    }
+
     void toast(String s) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
