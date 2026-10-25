@@ -76,7 +76,7 @@ final class MapView extends View {
         super(c);
         data = d;
         density = c.getResources().getDisplayMetrics().density;
-        setLayerType(LAYER_TYPE_SOFTWARE, null);
+        setLayerType(LAYER_TYPE_SOFTWARE, null); // very large zoomed paths are drawn reliably in software
         setFocusable(true);
         stroke.setStyle(Paint.Style.STROKE);
         stroke.setStrokeJoin(Paint.Join.ROUND);
@@ -99,6 +99,7 @@ final class MapView extends View {
             paths[i] = p;
         }
 
+        // Initialize State Paths
         statePaths = new Path[d.statePolys.size()];
         for (int i = 0; i < statePaths.length; i++) {
             float[] xy = d.statePolys.get(i).xy;
@@ -111,6 +112,7 @@ final class MapView extends View {
             statePaths[i] = p;
         }
 
+        // Initialize River Paths
         riverPaths = new Path[d.rivers.size()];
         for (int i = 0; i < riverPaths.length; i++) {
             float[] xy = d.rivers.get(i).xy;
@@ -177,6 +179,8 @@ final class MapView extends View {
         });
     }
 
+    // ---------- public API ----------
+
     void setListener(Listener l) { listener = l; }
 
     void setTheme(int t) {
@@ -217,6 +221,7 @@ final class MapView extends View {
 
     double centerLon() { return cLon; }
 
+    /** Zoom measured in dp per degree. */
     float zoomDp() { return density == 0 ? 0 : scale / density; }
 
     void focus(double lat, double lon, float dpPerDeg) {
@@ -236,6 +241,8 @@ final class MapView extends View {
     void zoomBy(float f) {
         zoomAround(f, getWidth() / 2f, getHeight() / 2f);
     }
+
+    // ---------- internals ----------
 
     private float minScale() { return Math.max(1f, getWidth() / 400f); }
 
@@ -268,7 +275,7 @@ final class MapView extends View {
     protected void onSizeChanged(int w, int h, int ow, int oh) {
         super.onSizeChanged(w, h, ow, oh);
         if (scale <= 0 && w > 0) {
-            scale = clampScale(w / 90f);
+            scale = clampScale(w / 90f); // about 90 degrees across at start
         } else if (w > 0) {
             scale = clampScale(scale);
         }
@@ -290,283 +297,4 @@ final class MapView extends View {
     }
 
     private float sx(double lon) {
-        return (float) (getWidth() / 2.0 + Geo.wrap180(lon - cLon) * scale);
-    }
-
-    private float sy(double lat) {
-        return (float) (getHeight() / 2.0 - (lat - cLat) * scale);
-    }
-
-    private void pick(float x, float y) {
-        if (listener == null) return;
-        float best = 26f * density;
-        int bi = -1;
-        for (int i = 0; i < nPick; i++) {
-            float d = (float) Math.hypot(px[i] - x, py[i] - y);
-            if (d < best) {
-                best = d;
-                bi = i;
-            }
-        }
-        if (bi >= 0) {
-            listener.onPick(refs[bi]);
-            return;
-        }
-        if (data.hasBorders && scale > 0) {
-            double lon = Geo.wrap180(cLon + (x - getWidth() / 2.0) / scale);
-            double lat = cLat - (y - getHeight() / 2.0) / scale;
-            String iso = data.countryAt(lon, lat);
-            if (iso != null) {
-                Data.Country c = data.byIso.get(iso);
-                if (c != null) {
-                    listener.onPick(c);
-                    return;
-                }
-            }
-        }
-        listener.onPick(null);
-    }
-
-    private boolean free(float cx, float cy, float w, float h) {
-        tmp.set(cx - w / 2f, cy - h / 2f, cx + w / 2f, cy + h / 2f);
-        for (int i = 0; i < placed.size(); i++) {
-            if (RectF.intersects(placed.get(i), tmp)) return false;
-        }
-        placed.add(new RectF(tmp));
-        return true;
-    }
-
-    private void label(Canvas cv, String s, float x, float y, float sizeDp, int color, int haloColor, boolean bold) {
-        text.setTextSize(sizeDp * density);
-        text.setFakeBoldText(bold);
-        float w = text.measureText(s);
-        float h = sizeDp * density;
-        if (!free(x, y, w + 4 * density, h)) return;
-        halo.setTextSize(sizeDp * density);
-        halo.setFakeBoldText(bold);
-        halo.setColor(haloColor);
-        text.setColor(color);
-        cv.drawText(s, x, y + h * 0.35f, halo);
-        cv.drawText(s, x, y + h * 0.35f, text);
-    }
-
-    @Override
-    protected void onDraw(Canvas cv) {
-        int w = getWidth(), h = getHeight();
-        if (w == 0 || scale <= 0) return;
-        final int[] th = THEMES[theme];
-        float s = scale;
-        float sd = s / density;
-        cv.drawColor(th[0]);
-
-        double left = cLon - w / (2.0 * s), right = cLon + w / (2.0 * s);
-        stroke.setColor(th[2]);
-        stroke.setStrokeWidth(Math.max(1f, density * 0.8f) / s);
-        for (int k = -2; k <= 2; k++) {
-            double off = 360.0 * k;
-            if (off - 180 > right || off + 230 < left) continue;
-            cv.save();
-            cv.translate((float) (w / 2.0 + (off - cLon) * s), (float) (h / 2.0 + cLat * s));
-            cv.scale(s, s);
-            for (int i = 0; i < paths.length; i++) {
-                Data.Poly p = data.polys.get(i);
-                if (p.water) continue;
-                boolean hl = highlightIso != null && highlightIso.equals(p.iso);
-                fill.setColor(hl ? th[4] : th[1]);
-                cv.drawPath(paths[i], fill);
-                cv.drawPath(paths[i], stroke);
-            }
-            for (int i = 0; i < paths.length; i++) {
-                Data.Poly p = data.polys.get(i);
-                if (!p.water) continue;
-                fill.setColor(th[0]);
-                cv.drawPath(paths[i], fill);
-                cv.drawPath(paths[i], stroke);
-            }
-
-            // Draw States / Provinces borders (sd >= 2f par ab ye show hongi)
-            if (data.hasStates && sd >= 2f) {
-                stroke.setColor(th[3]); // wazeh color taake saaf dikhein
-                stroke.setStrokeWidth(Math.max(0.8f, density * 0.6f) / s);
-                for (int i = 0; i < statePaths.length; i++) {
-                    cv.drawPath(statePaths[i], stroke);
-                }
-            }
-
-            // Draw Rivers (sd >= 1.5f par show hongi)
-            if (data.hasRivers && sd >= 1.5f) {
-                stroke.setColor(th[0]); 
-                stroke.setStrokeWidth(Math.max(1.2f, density * 1.0f) / s);
-                for (int i = 0; i < riverPaths.length; i++) {
-                    cv.drawPath(riverPaths[i], stroke);
-                }
-            }
-
-            cv.restore();
-        }
-
-        drawGrid(cv, th, w, h, s);
-
-        nPick = 0;
-        placed.clear();
-        int labels = 0;
-        int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
-        boolean bigZoom = sd >= 8f;
-        
-        if (sd >= 0.9f) {
-            for (Data.Country c : data.countries) {
-                float x = sx(c.lon), y = sy(c.lat);
-                if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
-                if (bigZoom && !c.capital.equals("-")) continue;
-                dot.setColor(th[6]);
-                cv.drawCircle(x, y, (c.sov ? 2.6f : 1.8f) * density, dot);
-                if (nPick < px.length) {
-                    px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
-                }
-                if (labels < 140 && ((c.sov && sd >= 2.3f) || sd >= 6f)) {
-                    label(cv, Data.name(c, lang), x, y - 9 * density, c.sov ? 11f : 9.5f, th[3], halo0, c.sov);
-                    labels++;
-                }
-            }
-        }
-
-        for (Data.City c : citiesByPop) {
-            float need;
-            if (c.cap) need = 8f;
-            else if (c.popK >= 10000) need = 2.2f;
-            else if (c.popK >= 3000) need = 3.5f;
-            else if (c.popK >= 1000) need = 6f;
-            else if (c.popK >= 400) need = 10f;
-            else if (c.popK >= 150) need = 18f;
-            else need = 34f;
-            if (sd < need) continue;
-            float x = sx(c.lon), y = sy(c.lat);
-            if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
-            dot.setColor(th[5]);
-            if (c.cap) {
-                cv.drawRect(x - 3.2f * density, y - 3.2f * density, x + 3.2f * density, y + 3.2f * density, dot);
-            } else {
-                cv.drawCircle(x, y, 2.3f * density, dot);
-            }
-            if (nPick < px.length) {
-                px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
-            }
-            if (labels < 220 && sd >= need + 0.2f) {
-                label(cv, Data.name(c, lang), x, y + 10 * density, c.cap ? 11f : 10f, th[3], halo0, c.cap);
-                labels++;
-            }
-        }
-
-        if (sd >= 14f) {
-            for (Data.Sub b : data.subs) {
-                if (!b.hasPos()) continue;
-                float x = sx(b.lon), y = sy(b.lat);
-                if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
-                dot.setColor(th[8]);
-                cv.drawRect(x - 2.2f * density, y - 2.2f * density, x + 2.2f * density, y + 2.2f * density, dot);
-                if (nPick < px.length) {
-                    px[nPick] = x; py[nPick] = y; refs[nPick] = b; nPick++;
-                }
-                if (labels < 260 && sd >= 22f) {
-                    label(cv, Data.name(b, lang), x, y - 9 * density, 9.5f, th[8], halo0, false);
-                    labels++;
-                }
-            }
-        }
-
-        if (hasMe) {
-            float x = sx(meLon), y = sy(meLat);
-            dot.setColor(0x553D8BFF);
-            cv.drawCircle(x, y, 14 * density, dot);
-            dot.setColor(0xFF2979FF);
-            cv.drawCircle(x, y, 6 * density, dot);
-            stroke.setStrokeWidth(2 * density);
-            stroke.setColor(0xFFFFFFFF);
-            cv.drawCircle(x, y, 6 * density, stroke);
-        }
-
-        if (hasSel) {
-            float x = sx(selLon), y = sy(selLat);
-            dot.setColor(0xFFE53935);
-            cv.drawCircle(x, y, 9 * density, dot);
-            dot.setColor(0xFFFFFFFF);
-            cv.drawCircle(x, y, 3.5f * density, dot);
-            stroke.setStrokeWidth(2 * density);
-            stroke.setColor(0xFFFFFFFF);
-            cv.drawCircle(x, y, 9 * density, stroke);
-            if (!selLabel.isEmpty()) {
-                text.setTextSize(12 * density);
-                text.setFakeBoldText(true);
-                float tw = text.measureText(selLabel);
-                float bx = x, by = y - 24 * density;
-                fill.setColor(0xE6000000);
-                cv.drawRoundRect(bx - tw / 2f - 8 * density, by - 11 * density, bx + tw / 2f + 8 * density, by + 9 * density,
-                        8 * density, 8 * density, fill);
-                text.setColor(0xFFFFFFFF);
-                cv.drawText(selLabel, bx, by + 4 * density, text);
-            }
-        }
-        drawScale(cv, th, h);
-    }
-
-    private void drawGrid(Canvas cv, int[] th, int w, int h, float s) {
-        double[] steps = {0.25, 0.5, 1, 2, 5, 10, 15, 30, 45};
-        double step = 45;
-        for (double st : steps) {
-            if (st * s >= 70 * density) {
-                step = st;
-                break;
-            }
-        }
-        stroke.setColor(th[7]);
-        stroke.setStrokeWidth(1f);
-        text.setTextSize(9 * density);
-        text.setFakeBoldText(false);
-        text.setColor(th[3] & 0x00FFFFFF | 0x99000000);
-        double lonL = cLon - w / (2.0 * s), lonR = cLon + w / (2.0 * s);
-        for (double lon = Math.floor(lonL / step) * step; lon <= lonR; lon += step) {
-            float x = (float) (w / 2.0 + (lon - cLon) * s);
-            cv.drawLine(x, 0, x, h, stroke);
-            double shown = Geo.wrap180(lon);
-            cv.drawText(degText(Math.abs(shown), step) + (shown < 0 ? "W" : (shown > 0 ? "E" : "")), x, 11 * density, text);
-        }
-        double latT = cLat + h / (2.0 * s), latB = cLat - h / (2.0 * s);
-        for (double lat = Math.floor(latB / step) * step; lat <= latT; lat += step) {
-            if (lat < -90 || lat > 90) continue;
-            float y = (float) (h / 2.0 - (lat - cLat) * s);
-            cv.drawLine(0, y, w, y, stroke);
-            cv.drawText(degText(Math.abs(lat), step) + (lat < 0 ? "S" : (lat > 0 ? "N" : "")), 22 * density, y - 2 * density, text);
-        }
-    }
-
-    private static String degText(double v, double step) {
-        if (step >= 1) return String.format(Locale.US, "%d\u00B0", Math.round(v));
-        if (step >= 0.5) return String.format(Locale.US, "%.1f\u00B0", v);
-        return String.format(Locale.US, "%.2f\u00B0", v);
-    }
-
-    private void drawScale(Canvas cv, int[] th, int h) {
-        double kmPerPx = 111.32 * Math.cos(Math.toRadians(cLat)) / scale;
-        if (kmPerPx <= 0) return;
-        double[] nice = {0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000};
-        double unit = miles ? 1.609344 : 1.0;
-        double pick = nice[0];
-        for (double v : nice) {
-            if (v * unit / kmPerPx <= 120 * density) pick = v;
-        }
-        float len = (float) (pick * unit / kmPerPx);
-        float x0 = 12 * density, y0 = h - 14 * density;
-        stroke.setColor(th[3]);
-        stroke.setStrokeWidth(2 * density);
-        cv.drawLine(x0, y0, x0 + len, y0, stroke);
-        cv.drawLine(x0, y0 - 5 * density, x0, y0 + 5 * density, stroke);
-        cv.drawLine(x0 + len, y0 - 5 * density, x0 + len, y0 + 5 * density, stroke);
-        text.setTextSize(10 * density);
-        text.setFakeBoldText(true);
-        text.setColor(th[3]);
-        text.setTextAlign(Paint.Align.LEFT);
-        String t = (pick < 1 ? String.format(Locale.US, "%.1f", pick) : String.format(Locale.US, "%.0f", pick)) + (miles ? " mi" : " km");
-        cv.drawText(t, x0, y0 - 8 * density, text);
-        text.setTextAlign(Paint.Align.CENTER);
-    }
-}
+        return (float) (getWidth() /
