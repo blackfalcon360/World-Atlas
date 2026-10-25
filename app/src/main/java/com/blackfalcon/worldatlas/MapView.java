@@ -13,6 +13,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -421,7 +422,7 @@ final class MapView extends View {
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
 
-        // 1. Countries - Smaller size, positioned right at the center coordinate (y + hText * 0.35f)
+        // 1. Countries - Small size, centered right at the country coordinate
         if (sd >= 0.4f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -432,9 +433,7 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                // Reduced font size (less than half of previous size)
                 float nameSize = c.sov ? 7.5f : 6f;
-                
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
                 halo.setTextSize(nameSize * density);
@@ -444,36 +443,46 @@ final class MapView extends View {
                 
                 String countryName = Data.name(c, lang);
                 float hText = nameSize * density;
-                // Positioned right at the center of the country coordinate
                 cv.drawText(countryName, x, y + hText * 0.35f, halo);
                 cv.drawText(countryName, x, y + hText * 0.35f, text);
             }
         }
 
-        // 2. Cities & Capitals
+        // 2. Cities & Capitals (Filtered with HashSet to prevent duplicate names)
+        HashSet<String> drawnCityNames = new HashSet<String>();
         for (Data.City c : citiesByPop) {
+            String cityName = Data.name(c, lang);
+            if (drawnCityNames.contains(cityName)) continue;
+
             float need;
-            if (c.cap) need = 8f;
+            if (c.cap) need = 2f;
             else if (c.popK >= 10000) need = 2.2f;
             else if (c.popK >= 3000) need = 3.5f;
             else if (c.popK >= 1000) need = 6f;
             else if (c.popK >= 400) need = 10f;
             else if (c.popK >= 150) need = 18f;
             else need = 34f;
+            
             if (sd < need) continue;
             float x = sx(c.lon), y = sy(c.lat);
             if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
+
+            drawnCityNames.add(cityName);
             dot.setColor(th[5]);
+
             if (c.cap) {
-                cv.drawRect(x - 3.2f * density, y - 3.2f * density, x + 3.2f * density, y + 3.2f * density, dot);
+                // Small square for Capital
+                cv.drawRect(x - 2.8f * density, y - 2.8f * density, x + 2.8f * density, y + 2.8f * density, dot);
             } else {
-                cv.drawCircle(x, y, 2.3f * density, dot);
+                // Small dot/circle for regular City
+                cv.drawCircle(x, y, 2.0f * density, dot);
             }
+
             if (nPick < px.length) {
                 px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
             }
             if (labels < 220 && sd >= need + 0.2f) {
-                label(cv, Data.name(c, lang), x, y + 10 * density, c.cap ? 11f : 10f, th[5], halo0, c.cap);
+                label(cv, cityName, x, y + 10 * density, c.cap ? 10f : 8.5f, th[5], halo0, c.cap);
                 labels++;
             }
         }
