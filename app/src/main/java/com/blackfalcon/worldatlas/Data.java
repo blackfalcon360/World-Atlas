@@ -48,6 +48,10 @@ final class Data {
         float[] xy;
     }
 
+    static final class Line {
+        float[] xy;
+    }
+
     static final class Hit {
         static final int COUNTRY = 0, CITY = 1, SUB = 2;
         int type;
@@ -65,7 +69,11 @@ final class Data {
     final List<City> cities = new ArrayList<City>();
     final HashMap<String, List<City>> citiesBy = new HashMap<String, List<City>>();
     final List<Poly> polys = new ArrayList<Poly>();
+    final List<Poly> statePolys = new ArrayList<Poly>();
+    final List<Line> rivers = new ArrayList<Line>();
     boolean hasBorders = false;
+    boolean hasStates = false;
+    boolean hasRivers = false;
 
     // ---------- loading ----------
 
@@ -158,6 +166,49 @@ final class Data {
         } catch (IOException e) {
             // map without shapes still works
         }
+
+        // Load States/Provinces (states.txt)
+        try {
+            BufferedReader r = new BufferedReader(new InputStreamReader(src.open("states.txt"), "UTF-8"));
+            String line;
+            while ((line = r.readLine()) != null) {
+                if (line.length() < 5 || line.charAt(0) == '#') continue;
+                String[] t = line.split(" ");
+                Poly p = new Poly();
+                p.water = false;
+                p.iso = t[1];
+                d.hasStates = true;
+                int n = (t.length - 2) / 2;
+                p.xy = new float[n * 2];
+                for (int i = 0; i < n * 2; i++) p.xy[i] = Float.parseFloat(t[2 + i]);
+                d.statePolys.add(p);
+            }
+            r.close();
+        } catch (IOException e) {
+            // states optional
+        }
+
+        // Load Rivers (rivers.txt)
+        try {
+            BufferedReader r = new BufferedReader(new InputStreamReader(src.open("rivers.txt"), "UTF-8"));
+            String line;
+            while ((line = r.readLine()) != null) {
+                if (line.length() < 5 || line.charAt(0) == '#') continue;
+                String[] t = line.split(" ");
+                if (t[0].equals("R")) {
+                    Line l = new Line();
+                    d.hasRivers = true;
+                    int n = (t.length - 1) / 2;
+                    l.xy = new float[n * 2];
+                    for (int i = 0; i < n * 2; i++) l.xy[i] = Float.parseFloat(t[1 + i]);
+                    d.rivers.add(l);
+                }
+            }
+            r.close();
+        } catch (IOException e) {
+            // rivers optional
+        }
+
         return d;
     }
 
