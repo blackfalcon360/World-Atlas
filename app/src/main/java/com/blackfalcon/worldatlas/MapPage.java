@@ -54,25 +54,17 @@ final class MapPage extends Page {
 
             @Override
             public void onMoved() {
-                if (coords != null) {
-                    double lat = map.centerLat();
-                    double lon = map.centerLon();
-                    
-                    // 1. D.DD Format
-                    String ddd = String.format(Locale.US, "%.5f°, %.5f°", lat, lon);
-                    
-                    // 2. DMS Format
-                    String dms = Geo.dms(lat, true) + " " + Geo.dms(lon, false);
-                    
-                    // 3. DDM Format (Degrees, Decimal Minutes)
-                    String ddm = formatToDDM(lat, true) + " " + formatToDDM(lon, false);
-                    
-                    // Teeno formats ko aik doosre ke neechay teen lines mein set karna
-                    coords.setText(ddd + "\n" + dms + "\n" + ddm);
-                }
+                updateCoordsDisplay(map.centerLat(), map.centerLon());
             }
         });
         root.addView(map, new FrameLayout.LayoutParams(Ui.MATCH, Ui.MATCH));
+
+        // Center Crosshair (+)
+        TextView crosshair = ui.tv("+", 24, Color.WHITE);
+        crosshair.setShadowLayer(4f, 0f, 0f, Color.BLACK);
+        crosshair.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams xp = new FrameLayout.LayoutParams(Ui.WRAP, Ui.WRAP, Gravity.CENTER);
+        root.addView(crosshair, xp);
 
         coords = ui.tv("", 10, Color.WHITE);
         coords.setBackground(ui.rounded(0x99000000, 8));
@@ -80,6 +72,9 @@ final class MapPage extends Page {
         FrameLayout.LayoutParams cp = new FrameLayout.LayoutParams(Ui.WRAP, Ui.WRAP, Gravity.TOP | Gravity.START);
         cp.setMargins(ui.dp(6), ui.dp(6), 0, 0);
         root.addView(coords, cp);
+
+        // Initial coordinates display
+        updateCoordsDisplay(map.centerLat(), map.centerLon());
 
         LinearLayout side = new LinearLayout(act);
         side.setOrientation(LinearLayout.VERTICAL);
@@ -120,6 +115,16 @@ final class MapPage extends Page {
         np.setMargins(0, 0, ui.dp(6), ui.dp(4));
         if (!act.data.hasBorders) root.addView(note, np);
         return root;
+    }
+
+    // Helper method to update top-left coordinates display in 3 formats
+    private void updateCoordsDisplay(double lat, double lon) {
+        if (coords != null) {
+            String ddd = String.format(Locale.US, "%.5f°, %.5f°", lat, lon);
+            String dms = Geo.dms(lat, true) + " " + Geo.dms(lon, false);
+            String ddm = formatToDDM(lat, true) + " " + formatToDDM(lon, false);
+            coords.setText(ddd + "\n" + dms + "\n" + ddm);
+        }
     }
 
     // DDM Format helper function
@@ -164,6 +169,7 @@ final class MapPage extends Page {
         map.focus(lat, lon, sd);
         map.setSelected(lat, lon, label);
         map.setHighlight(act.data.hasBorders ? iso : null);
+        updateCoordsDisplay(lat, lon);
         if (ref != null) showCard(ref);
         else hideCard();
     }
@@ -230,6 +236,7 @@ final class MapPage extends Page {
         }
         map.setSelected(lat, lon, label);
         map.setHighlight(act.data.hasBorders ? iso : null);
+        updateCoordsDisplay(lat, lon);
         showCard(ref);
     }
 
@@ -252,6 +259,7 @@ final class MapPage extends Page {
         cardSub.setText(Geo.dms(lat, true) + " " + Geo.dms(lon, false) + "\n" + near);
         cardRef = String.format(Locale.US, "%.5f, %.5f", lat, lon);
         cardBtn.setText(ui.t("copy"));
+        updateCoordsDisplay(lat, lon);
     }
 
     private void locate() {
@@ -266,9 +274,10 @@ final class MapPage extends Page {
             Toast.makeText(act, ui.t("m_nofix"), Toast.LENGTH_LONG).show();
             return;
         }
-        double lat = Gps.I.last.getLatitude(), lon = Gps.I.last.getLongitude(); // Corrected from Gpss to Gps
+        double lat = Gps.I.last.getLatitude(), lon = Gps.I.last.getLongitude();
         map.setMe(lat, lon);
         map.focus(lat, lon, Math.max(map.zoomDp(), 14f));
+        updateCoordsDisplay(lat, lon);
         pressedMe(lat, lon);
     }
 
@@ -287,5 +296,6 @@ final class MapPage extends Page {
         cardSub.setText(String.format(Locale.US, "%.5f, %.5f", lat, lon) + "\n" + near);
         cardRef = String.format(Locale.US, "%.5f, %.5f", lat, lon);
         cardBtn.setText(ui.t("copy"));
+        updateCoordsDisplay(lat, lon);
     }
 }
