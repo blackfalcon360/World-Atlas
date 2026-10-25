@@ -41,6 +41,8 @@ final class MapView extends View {
     private final Paint halo = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint dot = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path[] paths;
+    private final Path[] statePaths;
+    private final Path[] riverPaths;
     private final Data.City[] citiesByPop;
     private final ScaleGestureDetector scaler;
     private final GestureDetector gestures;
@@ -96,6 +98,32 @@ final class MapView extends View {
             }
             paths[i] = p;
         }
+
+        // Initialize State Paths
+        statePaths = new Path[d.statePolys.size()];
+        for (int i = 0; i < statePaths.length; i++) {
+            float[] xy = d.statePolys.get(i).xy;
+            Path p = new Path();
+            if (xy.length >= 4) {
+                p.moveTo(xy[0], -xy[1]);
+                for (int k = 2; k + 1 < xy.length; k += 2) p.lineTo(xy[k], -xy[k + 1]);
+                p.close();
+            }
+            statePaths[i] = p;
+        }
+
+        // Initialize River Paths
+        riverPaths = new Path[d.rivers.size()];
+        for (int i = 0; i < riverPaths.length; i++) {
+            float[] xy = d.rivers.get(i).xy;
+            Path p = new Path();
+            if (xy.length >= 4) {
+                p.moveTo(xy[0], -xy[1]);
+                for (int k = 2; k + 1 < xy.length; k += 2) p.lineTo(xy[k], -xy[k + 1]);
+            }
+            riverPaths[i] = p;
+        }
+
         citiesByPop = d.cities.toArray(new Data.City[0]);
         java.util.Arrays.sort(citiesByPop, new Comparator<Data.City>() {
             @Override
@@ -363,6 +391,25 @@ final class MapView extends View {
                 cv.drawPath(paths[i], fill);
                 cv.drawPath(paths[i], stroke);
             }
+
+            // Draw States / Provinces borders when zoomed in enough
+            if (data.hasStates && sd >= 8f) {
+                stroke.setColor(th[2] & 0x7FFFFFFF); // slightly lighter/transparent border for states
+                stroke.setStrokeWidth(Math.max(0.6f, density * 0.5f) / s);
+                for (int i = 0; i < statePaths.length; i++) {
+                    cv.drawPath(statePaths[i], stroke);
+                }
+            }
+
+            // Draw Rivers when zoomed in
+            if (data.hasRivers && sd >= 6f) {
+                stroke.setColor(th[8]); // river/water feature color
+                stroke.setStrokeWidth(Math.max(0.8f, density * 0.6f) / s);
+                for (int i = 0; i < riverPaths.length; i++) {
+                    cv.drawPath(riverPaths[i], stroke);
+                }
+            }
+
             cv.restore();
         }
 
