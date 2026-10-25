@@ -437,7 +437,6 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                // Clearly larger font size for countries compared to cities/capitals
                 float nameSize = c.sov ? 13.5f : 11f;
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
@@ -453,29 +452,27 @@ final class MapView extends View {
             }
         }
 
-        // 2. Cities & Capitals (Strict deduplication for capitals by name so they NEVER appear twice)
+        // 2. Cities & Capitals (Optimized with lower thresholds and higher label limit for maximum city density)
         for (Data.City c : citiesByPop) {
             String cityName = Data.name(c, lang);
 
             if (c.cap) {
-                // Capitals are strictly checked by name to prevent any duplicate rendering
                 if (drawnCapitals.contains(cityName)) continue;
                 drawnCapitals.add(cityName);
             } else {
-                // Regular cities checked by name and coordinates
                 String cityKey = cityName + "_" + Math.round(c.lat * 10.0) / 10.0 + "_" + Math.round(c.lon * 10.0) / 10.0;
                 if (drawnCityKeys.contains(cityKey)) continue;
                 drawnCityKeys.add(cityKey);
             }
 
             float need;
-            if (c.cap) need = 2f;
-            else if (c.popK >= 10000) need = 2.2f;
-            else if (c.popK >= 3000) need = 3.5f;
-            else if (c.popK >= 1000) need = 6f;
-            else if (c.popK >= 400) need = 10f;
-            else if (c.popK >= 150) need = 18f;
-            else need = 34f;
+            if (c.cap) need = 1.2f;
+            else if (c.popK >= 10000) need = 1.5f;
+            else if (c.popK >= 3000) need = 2.0f;
+            else if (c.popK >= 1000) need = 3.0f;
+            else if (c.popK >= 400) need = 5.0f;
+            else if (c.popK >= 150) need = 8.0f;
+            else need = 12.0f; // Lowered threshold to show smaller cities much earlier
             
             if (sd < need) continue;
             float x = sx(c.lon), y = sy(c.lat);
@@ -494,8 +491,8 @@ final class MapView extends View {
             if (nPick < px.length) {
                 px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
             }
-            if (labels < 220 && sd >= need + 0.2f) {
-                // Smaller font size for cities and capitals compared to country names
+            // Increased label limit from 220 to 1000 so many more cities appear simultaneously
+            if (labels < 1000 && sd >= need) {
                 label(cv, cityName, x, y + 10 * density, c.cap ? 7.5f : 6.5f, th[5], halo0, c.cap);
                 labels++;
             }
@@ -512,7 +509,7 @@ final class MapView extends View {
                 if (nPick < px.length) {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = b; nPick++;
                 }
-                if (labels < 260 && sd >= 22f) {
+                if (labels < 1200 && sd >= 22f) {
                     label(cv, Data.name(b, lang), x, y - 9 * density, 8.5f, th[8], halo0, false);
                     labels++;
                 }
