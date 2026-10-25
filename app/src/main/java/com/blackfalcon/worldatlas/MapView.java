@@ -421,7 +421,7 @@ final class MapView extends View {
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
 
-        // 1. Countries - Show all names larger and scaling/stretching dynamically with zoom (sd)
+        // 1. Countries - Smaller size, positioned right at the center coordinate (y + hText * 0.35f)
         if (sd >= 0.4f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -432,9 +432,8 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                // Dynamic scale factor so text gets larger and stretches with zoom level (sd)
-                float scaleFactor = Math.max(1f, Math.min(3.5f, sd * 0.28f));
-                float nameSize = (c.sov ? 15f : 12f) * scaleFactor;
+                // Reduced font size (less than half of previous size)
+                float nameSize = c.sov ? 7.5f : 6f;
                 
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
@@ -444,10 +443,10 @@ final class MapView extends View {
                 text.setColor(th[3]); // Country name color
                 
                 String countryName = Data.name(c, lang);
-                // Position text nicely centered above the dot with proper spacing
-                float textY = y - (14f * scaleFactor);
-                cv.drawText(countryName, x, textY, halo);
-                cv.drawText(countryName, x, textY, text);
+                float hText = nameSize * density;
+                // Positioned right at the center of the country coordinate
+                cv.drawText(countryName, x, y + hText * 0.35f, halo);
+                cv.drawText(countryName, x, y + hText * 0.35f, text);
             }
         }
 
