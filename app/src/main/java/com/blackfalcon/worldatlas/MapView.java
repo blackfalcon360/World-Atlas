@@ -422,7 +422,10 @@ final class MapView extends View {
         int labels = 0;
         int halo0 = th[0] & 0x00FFFFFF | 0xCC000000;
 
-        // 1. Countries - Small size, centered right at the country coordinate
+        // Set to track unique city/capital coordinates to prevent double rendering
+        HashSet<String> drawnCityKeys = new HashSet<String>();
+
+        // 1. Countries - Clearly larger font size than cities/capitals, centered at country coordinate
         if (sd >= 0.4f) {
             for (Data.Country c : data.countries) {
                 float x = sx(c.lon), y = sy(c.lat);
@@ -433,7 +436,8 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
                 }
                 
-                float nameSize = c.sov ? 7.5f : 6f;
+                // Much larger font size for countries to ensure they are bigger than cities/capitals
+                float nameSize = c.sov ? 13.5f : 11f;
                 text.setTextSize(nameSize * density);
                 text.setFakeBoldText(c.sov);
                 halo.setTextSize(nameSize * density);
@@ -448,11 +452,11 @@ final class MapView extends View {
             }
         }
 
-        // 2. Cities & Capitals (Filtered with HashSet to prevent duplicate names)
-        HashSet<String> drawnCityNames = new HashSet<String>();
+        // 2. Cities & Capitals - Smaller font size, deduplicated
         for (Data.City c : citiesByPop) {
             String cityName = Data.name(c, lang);
-            if (drawnCityNames.contains(cityName)) continue;
+            String cityKey = cityName + "_" + Math.round(c.lat * 100.0) / 100.0 + "_" + Math.round(c.lon * 100.0) / 100.0;
+            if (drawnCityKeys.contains(cityKey)) continue;
 
             float need;
             if (c.cap) need = 2f;
@@ -467,7 +471,7 @@ final class MapView extends View {
             float x = sx(c.lon), y = sy(c.lat);
             if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
 
-            drawnCityNames.add(cityName);
+            drawnCityKeys.add(cityKey);
             dot.setColor(th[5]);
 
             if (c.cap) {
@@ -482,7 +486,8 @@ final class MapView extends View {
                 px[nPick] = x; py[nPick] = y; refs[nPick] = c; nPick++;
             }
             if (labels < 220 && sd >= need + 0.2f) {
-                label(cv, cityName, x, y + 10 * density, c.cap ? 10f : 8.5f, th[5], halo0, c.cap);
+                // Noticeably smaller font size for cities and capitals compared to countries
+                label(cv, cityName, x, y + 10 * density, c.cap ? 7.5f : 6.5f, th[5], halo0, c.cap);
                 labels++;
             }
         }
@@ -499,7 +504,7 @@ final class MapView extends View {
                     px[nPick] = x; py[nPick] = y; refs[nPick] = b; nPick++;
                 }
                 if (labels < 260 && sd >= 22f) {
-                    label(cv, Data.name(b, lang), x, y - 9 * density, 9.5f, th[8], halo0, false);
+                    label(cv, Data.name(b, lang), x, y - 9 * density, 8.5f, th[8], halo0, false);
                     labels++;
                 }
             }
