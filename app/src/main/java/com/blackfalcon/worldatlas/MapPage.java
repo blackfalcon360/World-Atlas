@@ -266,7 +266,7 @@ final class MapPage extends Page {
             Toast.makeText(act, ui.t("m_nofix"), Toast.LENGTH_LONG).show();
             return;
         }
-        double lat = Gps.I.last.getLatitude(), lon = Gpss.I.last.getLongitude(); // Note: kept standard lookup
+        double lat = Gps.I.last.getLatitude(), lon = Gps.I.last.getLongitude(); // Corrected from Gpss to Gps
         map.setMe(lat, lon);
         map.focus(lat, lon, Math.max(map.zoomDp(), 14f));
         pressedMe(lat, lon);
